@@ -30,6 +30,7 @@ func TransparentStatic(ctx *context.Context) {
 func main() {
 	beego.InsertFilter("/", beego.BeforeRouter, TransparentStatic)
 	beego.InsertFilter("/*", beego.BeforeRouter, TransparentStatic)
+	//刚加入的数据
 	//设置session
 	beego.BConfig.WebConfig.Session.SessionOn = true
 	beego.Run()
