@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>扫雷小游戏</title>
+  <script type="text/javascript" src="../../js/vue.js" ></script>
+    <style>
+    body{
+        background-color: #EEE;
+    }
+    *{
+        margin: 0px;
+        padding: 0px;
+    }
+    #contain{
+        margin: 0 auto;
+        margin-top: 30px;
+    }
+    .item{
+        position: relative;
+        width:20px;
+        height: 20px;
+        border-top:3px solid #CCC;
+        border-left:3px solid #CCC;
+        border-bottom: 3px solid #999;
+        border-right: 3px solid #999;
+        display:inline-block;
+        background-color: #AAA;
+        cursor: pointer;
+        color:#00F;
+        text-align: center;
+        font-weight: bold;
+        font-size: 16px;
+        vertical-align: top;
+    }
+
+    .item:hover{
+        background-color: #BBB;
+    }
+
+    .item_active{
+        position: relative;
+        width: 24px;
+        height: 24px;
+        border: 1px solid #888;
+        display:inline-block;
+        background-color: #999;
+        cursor: pointer;
+        color:#00F;
+        text-align: center;
+        line-height: 26px;
+        font-weight: bold;
+        font-size: 16px;
+        vertical-align: top;
+    }
+    .item_active_boom{
+        position: relative;
+        width:24px;
+        height:24px;
+        border: 1px solid #888;
+        display:inline-block;
+        background-image: url(img/boom.png);
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        background-color: #F00;
+        cursor: pointer;
+        color:#00F;
+        text-align: center;
+        font-weight: bold;
+        font-size: 16px;
+        vertical-align: top;
+    }
+    .show{
+        width:130px;
+        display: inline-block;
+        text-align: center;
+    }
+    </style>
+</head>
+<body>
+    <div id="contain" v-bind:style="{width:list[0].length*26+'px'}">
+            <div>
+                <div class="show">分数：{{score}}</div>
+                <div class="show">{{state}}</div>
+                <div class="show">时间：{{time}}</div>
+
+            </div>
+            <div v-for="(item,index) in list">
+                <template  v-for="(item2,index2) in item">
+                        <!--当没有被点击之前-->
+                        <template v-if="!item2.active">
+                                <div class="item" v-on:click="click(index,index2)" ></div>
+                        </template>
+                        <template  v-else >
+                                <template v-if="item2.value==0">
+                                        <div class="item_active"></div>
+                                </template>
+                                <template v-else-if="item2.value==-1">
+                                        <div class="item_active_boom"></div>
+                                </template>
+                                <template v-else>
+                                        <div class="item_active">{{item2.value}}</div>
+                                </template>
+                        </template>
+                        
+                </template>
+                
+            </div>
+        </div>
+
+    
+
+</body>
+    <script>
+
+    new Vue({
+        el:'#contain',
+        data:{
+            list:[],
+            score:0,
+            time:0,
+            state:"未开始",//状态,
+            timer:null,
+            row:12,//行数
+            col:10,//列数
+            boom:12,//炸弹数
+        },
+        created:function(){
+        	this.init();
+        },
+        methods:{
+            click:function(x,x1){
+                console.log(x+":"+x1);
+                this.list[x][x1].active=true;
+               // debugger;
+                if(this.list[x][x1].value==-1){
+                    this.state="结束";
+                    if(this.timer!=null){
+                        clearInterval(this.timer);
+                    }
+                    //当是地雷时结束
+                    this.end();
+                }else if(this.list[x][x1].value==0){
+                    //当点击到白块时，将所有挨着的白块都显示出来
+                    this.clearblack(x,x1,this.list);
+                }else{
+                    this.score+=this.list[x][x1].value;
+                }
+
+                if(this.state=="未开始"){
+                    this.state="进行中";
+                    console.log("进行中");
+                    var that=this;
+                    this.timer=setInterval(function(){
+                        that.time++;
+                        console.log("time:"+that.time);
+                    },1000);
+                    
+                }
+            },
+            //结束游戏
+            end:function(){
+                for(var i=0;i<this.row;i++){
+                    for(var j=0;j<this.col;j++){
+                        this.list[i][j].active=true;
+                    }
+                }
+            },
+            //清除相邻白块
+            clearblack:function(i,j,list){
+                //创建任务栈
+                var stack=[];
+                var item={};
+                item.x=i;
+                item.y=j;
+                item.index=1;
+                var totalX=this.row;
+                var totalY=this.col;
+                stack.push(item);
+                do{
+                    //获取堆栈最上面的一个元素
+                    var length=stack.length;
+                    if(length>0){
+                        var temp=stack[length-1];
+                        //根据index获取下一个元素的坐标
+                        if(temp.index>4){
+                            //删除最后一个元素
+                            stack.pop();
+                        }else if(temp.index==1){
+                            //当下一个元素时空时
+                            if(temp.x-1>=0&&temp.x-1<totalX&&temp.y>=0&&temp.y<totalY&&this.list[temp.x-1][temp.y].value==0&&!this.list[temp.x-1][temp.y].active){
+                                //设置为激活状态
+                                this.list[temp.x-1][temp.y].active=true;
+                                var itemT={};
+                                itemT.x=temp.x-1;
+                                itemT.y=temp.y;
+                                itemT.index=1;
+                                stack.push(itemT);
+                            }else{
+                                temp.index++;
+                            }
+                        }else if(temp.index==2){
+                            //当下一个元素时空时
+                            if(temp.x>=0&&temp.x<totalX&&temp.y+1>=0&&temp.y+1<totalY&&this.list[temp.x][temp.y+1].value==0&& !this.list[temp.x][temp.y+1].active){
+                               //设置为激活状态
+                               this.list[temp.x][temp.y+1].active=true;
+                                var itemT={};
+                                itemT.x=temp.x;
+                                itemT.y=temp.y+1;
+                                itemT.index=1;
+                                stack.push(itemT);
+                            }else{
+                                temp.index++;
+                            }
+                        }else if(temp.index==3){
+                            //当下一个元素时空时
+                            if(temp.x+1>=0&&temp.x+1<totalX&&temp.y>=0&&temp.y<totalY&&this.list[temp.x+1][temp.y].value==0&&!this.list[temp.x+1][temp.y].active){
+                                //设置为激活状态
+                                this.list[temp.x+1][temp.y].active=true;
+                                var itemT={};
+                                itemT.x=temp.x+1;
+                                itemT.y=temp.y;
+                                itemT.index=1;
+                                stack.push(itemT);
+                            }else{
+                                temp.index++;
+                            }
+                        }else if(temp.index==4){
+                            //当下一个元素时空时
+                            if(temp.x>=0&&temp.x<totalX&&temp.y-1>=0&&temp.y-1<totalY&&this.list[temp.x][temp.y-1].value==0&&!this.list[temp.x][temp.y-1].active){
+                                //设置为激活状态
+                                this.list[temp.x][temp.y-1].active=true;
+                                var itemT={};
+                                itemT.x=temp.x;
+                                itemT.y=temp.y-1;
+                                itemT.index=1;
+                                stack.push(itemT);
+                            }else{
+                                temp.index++;
+                            }
+                        }
+                    }
+                }while(stack.length>0);
+                return list;
+            },
+            
+           randomNumber:  function (total,size){/***产生随机数**/
+		        var result=[];//最后的结果集
+		        var temp=[];//临时变量
+		        for(var i=0;i<total;i++){
+		            temp.push(i);
+		        }
+		        //开始打乱数据
+		        for(var i=1;i<=total;i++){
+		           var start = parseInt(Math.random()*total);
+		           var end = parseInt(Math.random()*total);
+		           var t=0;
+		           //交换数据
+		           if(start!=end){
+		                t=temp[end];
+		                temp[end]=temp[start];
+		                temp[start]=t;
+		           }
+		        }
+		        for(var i=0;i<size;i++){
+		            result.push(temp[i]);
+		        }
+		        return result;
+		    },
+		    /***初始化方法***/
+   			init:function(){
+   				//构造数组
+			    var dataList=[];
+			    for(var i=0;i<this.row;i++){
+			        var item=[];
+			        for(var j=0;j<this.col;j++){
+			            //默认填充0
+			            item.push(0);
+			        }
+			        dataList.push(item);
+			    }
+			    //产生炸弹
+			    var rand=this.randomNumber(this.row*this.col,this.boom);
+			    //将炸弹填充到数组
+			    for(var i=0;i<rand.length;i++){
+			
+			        var temp=rand[i];
+			        var x=parseInt(temp/this.col);
+			        var y=temp%this.col;
+			        try{
+			        	dataList[x][y]=-1;
+			        }catch{
+			        	
+			        	console.log(temp);
+			        	console.log(x);
+			        	console.log(y);
+			        	debugger;
+			        }
+			        
+			    }
+			
+			    //计算每个方块周围的炸弹个数
+			    for(var i=0;i<this.row;i++){
+			        for(var j=0;j<this.col;j++){
+			            //当是炸弹时跳出
+			            if(dataList[i][j]==-1){
+			                continue;
+			            }
+			            //当不是炸弹时，查看周围炸弹个数
+			            var num=0;
+			            var tempx=0;
+			            var tempy=0;
+			            for(var m=-1;m<2;m++){
+			                for(var n=-1;n<2;n++){
+			                    tempx=i+m;
+			                    tempy=j+n;
+			                    //当是炸弹时加一
+			                    if(tempx>=0&&tempx<this.row&&tempy>=0&&tempy<this.col&&dataList[tempx][tempy]==-1){
+			                        num++;
+			                    }
+			                }
+			            }
+			            dataList[i][j]=num;
+			        }
+			    }
+			
+			    var itemList=[];
+			    //构造vue 对象用于显示状态
+			    for(var i=0;i<this.row;i++){
+			        var row=[];
+			        for(var j=0;j<this.col;j++){
+			            var item={};
+			            //值
+			            item.value=dataList[i][j];
+			            //是否被点击
+			            item.active=false;
+			            row.push(item);
+			        }
+			        itemList.push(row);
+			    }
+			    
+			    this.list=itemList;
+			    
+   			},
+    
+    
+        },
+    });
+
+    </script>
+</html>

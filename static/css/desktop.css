@@ -1,0 +1,160 @@
+/**桌面基本设置***/
+
+body{
+	background-image: url(../img/background.jpg);
+	background-repeat: no-repeat;
+	background-size: cover;
+  	-webkit-background-size: cover;
+  	-o-background-size: cover;
+  	background-position: center 0;
+}
+
+.winxp_desk_footer{
+	width:100%;
+	height:35px;
+	position: fixed;
+	bottom: 0px;
+	z-index: 9999;
+	background: rgba(0, 0, 0, 0) linear-gradient(rgb(31, 47, 134) 0px, rgb(49, 101, 196) 3%, rgb(54, 130, 229) 6%, rgb(68, 144, 230) 10%, rgb(56, 131, 229) 12%, rgb(43, 113, 224) 15%, rgb(38, 99, 218) 18%, rgb(35, 91, 214) 20%, rgb(34, 88, 213) 23%, rgb(33, 87, 214) 38%, rgb(36, 93, 219) 54%, rgb(37, 98, 223) 86%, rgb(36, 95, 220) 89%, rgb(33, 88, 212) 92%, rgb(29, 78, 192) 95%, rgb(25, 65, 165) 98%) repeat scroll 0% 0%;
+    background-position-x: 0%;
+    background-position-y: 0%;
+    background-repeat: repeat;
+    background-attachment: scroll;
+}
+
+.winxp_desk_footer .winxp_desk_footer_start{
+	display: inline-block;
+}
+
+.winxp_desk_footer .winxp_desk_footer_list .winxp_desk_footer_list_name{
+	display: inline-block;
+	overflow: hidden;
+	width:120px;
+	font-size: 12px;
+	text-overflow:ellipsis;
+	white-space: nowrap;
+}
+.winxp_desk_footer .winxp_desk_footer_list .winxp_desk_footer_list_img{
+	width: 25px;
+	height: 25px;
+}
+.winxp_desk_footer .winxp_desk_footer_list {
+	display: inline-block;
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
+	cursor: default;
+}
+.winxp_desk_footer .winxp_desk_footer_list li{
+	width: 150px;
+	height:28px;
+	background-color: rgb(60, 129, 243);
+	line-height: 28px;
+	float: left;
+	border-radius: 4px;
+	margin-left: 1px;
+	margin-right: 1px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+	overflow: hidden;
+	text-overflow:ellipsis;
+	white-space: nowrap;
+	cursor: default;
+}
+/****底部工具栏时间****/
+.winxp_desk_footer .winxp_desk_footer_tool{
+	display: inline-block;
+	float: right;
+	width:100px;
+	height:34px;
+	flex-shrink: 0;
+	background: rgba(0, 0, 0, 0) linear-gradient(rgb(12, 89, 185) 1%, rgb(19, 158, 233) 6%, rgb(24, 181, 242) 10%, rgb(19, 155, 235) 14%, rgb(18, 144, 232) 19%, rgb(13, 141, 234) 63%, rgb(13, 159, 241) 81%, rgb(15, 158, 237) 88%, rgb(17, 155, 233) 91%, rgb(19, 146, 226) 94%, rgb(19, 126, 215) 97%, rgb(9, 91, 201) 100%) repeat scroll 0% 0%;
+	border-left: 1px solid rgb(16, 66, 175);
+	box-shadow: rgb(24, 187, 255) 1px 0px 1px inset;
+}
+.winxp_desk_footer .winxp_desk_footer_tool .time{
+	line-height: 34px;
+	text-align: center;
+	font-size: 12px;
+	font-weight: bold;
+	color: #fff;
+}
+
+/**桌面图标**/
+.winxp_desk_app{
+	position: absolute;
+	margin: 2px;
+	left: 0;
+	top: 0;
+	right: 2px;
+	bottom: 35px;
+}
+.winxp_desk_app img{
+	width:48px;
+	height: 48px;
+}
+.winxp_desk_app .icon_item{
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+	display: block;
+	width: 100%;
+	height: 100%;
+	white-space: nowrap;
+}
+.winxp_desk_app .icon_item .winxp_desk_app_item:hover{
+	background-color: rgba(200,200,200,0.5);
+}
+.winxp_desk_app .icon_item li,.winxp_desk_app .icon_item .winxp_desk_app_item{
+	width:80px;
+	height:80px ;
+	text-align: center;
+	list-style: none;
+	display: inline-block;
+	font-size: 12px;
+	font-weight: bold;
+	color: #000;
+}
+
+.winxp_desk_app .icon_item .winxp_desk_app_name{
+	overflow: hidden;
+	text-overflow:ellipsis;
+	white-space: nowrap;
+}
+
+/***桌面弹出菜单***/
+.winxp_desk_app .pop_menu  .border-top,.winxp_desk_app .pop_menu  .border-bottom{
+	border:1px solid #AAA;
+}
+.winxp_desk_app .pop_menu {
+	position: absolute;
+}
+.winxp_desk_app .pop_menu ul{
+	position: absolute;
+	left: 0px;
+	top:0px;
+	display: inline-block;
+	list-style: none;
+	border:1px solid #AAA;
+	background-color: #fff;
+}
+
+.winxp_desk_app .pop_menu ul li{
+	width:150px;
+	height: 30px;
+	line-height: 30px;
+	
+}
+
+.winxp_desk_app .pop_menu ul li ul{
+	position: relative;
+	display: none;
+	left:150px;
+	top: -30px;
+}
+.winxp_desk_app .pop_menu ul li:hover{
+	background-color: #CCC;
+}
+.winxp_desk_app .pop_menu ul li:hover ul{
+	display: block;
+}

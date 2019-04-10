@@ -1,0 +1,32 @@
+var app=[
+	{
+		name:'回收站',
+		icon:'img/tash.png',
+		url:'wwww'
+	},
+	{
+		name:'我的电脑',
+		icon:'img/computer.png',
+		url:'app/desk/index.html'
+	},
+	{
+		name:'控制面板',
+		icon:'img/contrl.png',
+		url:'https://blog.csdn.net/telrob'
+	},
+	{
+		name:'腾讯QQ',
+		icon:'img/qq2.png',
+		url:'app/qq/index.html'
+	},
+	{
+		name:'Google Chrome',
+		icon:'img/google.png',
+		url:'https://www.baidu.com'
+	},
+	{
+		name:'扫雷',
+		icon:'app/sweep/img/boomicon.png',
+		url:'app/sweep/'
+	},
+];

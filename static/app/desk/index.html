@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>我的电脑</title>
+		<script type="text/javascript" src="../../js/vue.js" ></script>
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+		<link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+		<style>
+		*{
+			margin: 0px;
+			padding: 0px;
+		}
+		.error{
+			text-align: center;
+			font-size: 24px;
+			height:30px;
+			line-height: 30px;
+		}
+
+		.item{
+			height: 30px;
+			cursor: pointer;
+			margin-top:5px;
+			margin-bottom: 5px;
+		}
+		.item:hover{
+			background-color:rgba(204, 232, 254, 0.5);
+		}
+		.item_seleted{
+			background-color:rgba(204, 232, 254, 1);
+		}
+		.contain{
+			width:97%;
+		}
+	
+		</style>
+	</head>
+	<body>
+		<div class="listFile">
+			<div v-if="success" class="container contain">
+
+				<div class="row">
+					<div class="col-md-4 col-lg-4 col-sm-4">文件名称</div>
+					<div class="col-md-4 col-lg-4 col-sm-4  visible-lg-block visible-md-block">修改时间</div>
+					<div class="col-md-4 col-lg-4 col-sm-4  visible-lg-block visible-md-block">大小</div>
+				</div>
+
+				<div v-for="(item,index) in fileList" @dblclick="selectFile(index)" @click="select(index)" v-bind:class="{item:true,row:true,item_seleted:item.seleted}"> 
+						<div class="col-md-4 col-lg-4 col-sm-4">
+								<img style="width:30px;height:30px;" v-bind:src="item.img">
+								<span >{{item.name}}</span>
+						</div>
+						<div class="col-md-4 col-lg-4 col-sm-4  visible-lg-block visible-md-block">{{item.time}}</div>
+						<div class="col-md-4 col-lg-4 col-sm-4  visible-lg-block visible-md-block" >{{item.size}}</div>
+				</div>
+			</div>
+			<template v-else>
+				<div class="error">{{message}}</div>
+			</template>
+		</div>
+    
+	</body>
+	<script>
+	
+	
+	new Vue({
+		el:'.listFile',
+		data:{
+			fileList:[],
+			path:'/',
+			success:false,
+			message:'',
+		},
+		created:function() {
+			var that=this;
+			this.load({name:this.path});
+		},
+		methods: {
+			//加载文件
+			load:function(param,call){
+				var that=this;
+				axios({
+						method:'post',
+						url:'/file/list.do',
+						timeout: 1000,
+						params:param,
+						//请求头
+						headers:{
+							'custome-header': 'miaov',
+						}
+				}).then(function(res){
+					var data=res.data;
+					that.message=data.message;
+					if(data.success==0){
+						that.success=true;
+						for(var i=0;i<data.data.length;i++){
+							data.data[i].seleted=false;
+							if(data.data[i].isDir){
+								data.data[i].img="/icon/folder.png"
+							}else{
+								data.data[i].img="/icon/file.png"
+							}
+						}
+						that.fileList=data.data;
+					}else{
+						that.success=false;
+					}
+				});
+			},
+			//双击选择
+			selectFile:function(index){
+				var item=this.fileList[index];
+				var that=this;
+				if(item.isDir){
+					this.path+=item.name+"/";
+					this.load({name:this.path});
+				}else{
+					console.log("是文件");
+				}
+			},
+			//单击选择
+			select:function(index){
+				for(var i=0;i<this.fileList.length;i++){
+					if(i==index){
+						this.fileList[i].seleted=true;
+					}else{
+						this.fileList[i].seleted=false;
+					}
+					
+				}
+			}
+		},
+	});
+	</script>
+  
+</html>

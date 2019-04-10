@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="css/winxp.css" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<script type="text/javascript" src="js/app.js" ></script>
+		<script type="text/javascript" src="js/vue.js" ></script>
+		<script type="text/javascript" src="js/base.js" ></script>
+		<script type="text/javascript" src="js/desktop.js" ></script>
+		<script type="text/javascript" src="js/jquery-3.3.1.min.js" ></script>
+		<script type="text/javascript" src="js/vue-resource.js" ></script>
+		<link rel="stylesheet" href="css/desktop.css" />
+		<style>
+			
+		</style>
+	</head>
+	<body>
+		
+		
+		
+		<winxp-desk-app class="app" :list="list" v-on:openapp="openapp">
+			
+		</winxp-desk-app>
+		
+		
+	
+
+		<win-xp-dlg :list="list"  ref="mychild" class="mdlg" title="对话框" icon="img/tash.png" v-on:min="minx" v-on:close="close" >
+			<div style="background-color: #888;height: 100%;box-sizing:border-box">
+			</div>
+			<h3 slot="footer"></h3>
+		</win-xp-dlg>
+		
+		<!--- 底部导航栏--->
+		<winxp-desk-footer class="footer" :list="list" v-on:openapp="openapp"></winxp-desk-footer>
+		
+		
+		
+	</body>
+	<script>
+		//对话框对象
+		var dlg=null;
+		//底部导航对象
+		var footer=null;
+		var openList=[];
+		//桌面图标
+		new Vue({
+			el:'.app',
+			data:{
+				list:app,
+			},
+			methods:{
+				openapp:function(index){
+					var obj={};
+					obj.id=uuid();
+					obj.name=this.list[index].name;
+					obj.icon=this.list[index].icon;
+					obj.url=this.list[index].url;
+					dlg.additems(obj);
+					footer.additem(obj);
+				}
+			}
+		});
+		
+		footer=new Vue({
+			el:'.footer',
+			data:{
+				list:openList,
+			},
+			methods:{
+				openapp:function(id){
+					dlg.showstate(id);
+				},
+				additem:function(obj){
+					this.list.push(obj);	
+				},
+				delitem:function(id){
+					for(var i=0;i<this.list.length;i++){
+						if(this.list[i].id==id){
+							this.list.splice(i,1);
+							break;
+						}
+					}
+				},
+			},
+		});
+		//对话框组件
+		var ll=app;
+		
+		dlg=new Vue({
+			el:'.mdlg',
+			data:{
+				list:[],
+			},
+			created:function(){
+				
+			},
+			methods:{
+				close:function(id){
+					//删除自己的数据
+					for(var i=0;i<this.list.length;i++){
+						if(this.list[i].id==id){
+							this.list.splice(i,1);
+							break;
+						}
+					}
+					//删除底部导航栏数据
+					footer.delitem(id);
+				},
+				minx:function(){
+					
+				},
+				/**添加事件**/
+				additems:function(obj){
+					this.list.push(obj);
+					this.$refs.mychild.additem(obj);
+				},
+				//设置窗口的状态
+				showstate:function(id){
+					this.$refs.mychild.showstate(id);
+				},
+			}
+		});
+		
+		function uuid(){
+			var date=new Date();
+			var result="id_"+date.getYear()+"_"+date.getMonth()+"_"+date.getDay()+"_"+date.getHours()+"_"+date.getMinutes()+"_"+date.getSeconds()+"_"+date.getMilliseconds()+"_"+Math.ceil(Math.random()*100);
+			return result;
+		}
+	</script>
+</html>
