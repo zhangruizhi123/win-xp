@@ -5,38 +5,18 @@
 		<title>我的电脑</title>
 		<script type="text/javascript" src="../../js/vue.js" ></script>
 		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+		<script src="app.js"></script>
 		<link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+		<link href="app.css" rel="stylesheet">
 		<style>
 		*{
 			margin: 0px;
 			padding: 0px;
 		}
-		.error{
-			text-align: center;
-			font-size: 24px;
-			height:30px;
-			line-height: 30px;
-		}
-
-		.item{
-			height: 30px;
-			cursor: pointer;
-			margin-top:5px;
-			margin-bottom: 5px;
-		}
-		.item:hover{
-			background-color:rgba(204, 232, 254, 0.5);
-		}
-		.item_seleted{
-			background-color:rgba(204, 232, 254, 1);
-		}
-		.contain{
-			width:97%;
-		}
-	
 		</style>
 	</head>
 	<body>
+		<Toast class="toast" :text="msg" :display="display" :color="color" :background="background"></Toast>
 		<div class="listFile">
 			<div v-if="success" class="container contain">
 
@@ -46,8 +26,8 @@
 					<div class="col-md-4 col-lg-4 col-sm-4  visible-lg-block visible-md-block">大小</div>
 				</div>
 
-				<div v-for="(item,index) in fileList" @dblclick="selectFile(index)" @click="select(index)" v-bind:class="{item:true,row:true,item_seleted:item.seleted}"> 
-						<div class="col-md-4 col-lg-4 col-sm-4">
+				<div v-for="(item,index) in fileList" @dblclick="selectFile(index)" @click="select(index)" @contextmenu.prevent="popmenu"  v-bind:class="{item:true,row:true,item_seleted:item.seleted}"> 
+						<div class="col-md-4 col-lg-4 col-sm-4 text">
 								<img style="width:30px;height:30px;" v-bind:src="item.img">
 								<span >{{item.name}}</span>
 						</div>
@@ -59,12 +39,32 @@
 				<div class="error">{{message}}</div>
 			</template>
 		</div>
+
+		<div class="pop_menu" v-bind:style="{display:display,left:x,top:y}">
+			<ul>
+				<li v-for="(item,indexp) in list" >
+					
+					<template v-if="item.list">
+							<div >{{item.name}}</div>
+						<span class="more"></span>
+						<ul>
+							<li v-for="(item2,index2) in item.list" ><div @click.prevent="selectMenu(indexp,index2)" >{{item2.name}}</div></li>
+						</ul>
+					</template>
+					<template v-else>
+							<div @click.prevent="selectMenu(indexp,-1)">{{item.name}}</div>
+					</template>
+				</li>
+			</ul>
+		</div>
     
 	</body>
 	<script>
 	
-	
-	new Vue({
+	var popMenu=null;
+	var fileList=null;
+	var toast=null;
+	fileList=new Vue({
 		el:'.listFile',
 		data:{
 			fileList:[],
@@ -78,7 +78,7 @@
 		},
 		methods: {
 			//加载文件
-			load:function(param,call){
+			load:function(param){
 				var that=this;
 				axios({
 						method:'post',
@@ -102,7 +102,19 @@
 								data.data[i].img="/icon/file.png"
 							}
 						}
+						that.path=param.name;
 						that.fileList=data.data;
+						//添加返回列
+						if(true){
+							var parent={
+								name:'上级目录',
+								img:'/icon/folder.png',
+								selected:false,
+								isDir:true,
+								back:true,
+							};
+							that.fileList.unshift(parent);
+						}
 					}else{
 						that.success=false;
 					}
@@ -112,15 +124,22 @@
 			selectFile:function(index){
 				var item=this.fileList[index];
 				var that=this;
-				if(item.isDir){
+				if(item.back){
+					var path=this.path;
+					path=path.substring(0, path.lastIndexOf('/'));
+					path=path.substring(0, path.lastIndexOf('/'))+"/";
+					this.load({name:path});
+				}else if(item.isDir){
 					this.path+=item.name+"/";
 					this.load({name:this.path});
 				}else{
 					console.log("是文件");
+					toast.show("是文件");
 				}
 			},
 			//单击选择
 			select:function(index){
+				popMenu.hide();
 				for(var i=0;i<this.fileList.length;i++){
 					if(i==index){
 						this.fileList[i].seleted=true;
@@ -129,8 +148,129 @@
 					}
 					
 				}
+			},
+			//右键菜单
+			popmenu:function(e){
+				var event=event||window.event;
+				var x=(event.clientX)+"px";
+				var y=(event.clientY)+"px";
+				popMenu.show(x,y);
+			},
+			//删除
+			delet:function(path){
+
+				var that=this;
+				axios({
+						method:'post',
+						url:'/file/del.do',
+						timeout: 1000,
+						params:{name:path},
+				}).then(function(res){
+					if(res.data.success==0){
+						that.load({name:that.path});
+					}else{
+						toast.show(res.data.message);
+					}
+					
+				});
+				
 			}
 		},
+	});
+
+	popMenu=new Vue({
+		el:'.pop_menu',
+		created:function(){
+			this.list=[
+				{name:'打开',id:"open"},
+				{name:'新建',list:[
+					{name:'新建文件'},
+					{name:'新建目录'},
+				]},
+				{name:'复制'},
+				{name:'粘贴'},
+				{name:'删除',id:'delete'},
+		];
+		},
+		data:{
+			display:'none',
+			x:'0px',
+			y:'0px',
+			list:[],
+		},
+		methods:{
+			show:function(x,y){
+				this.display="block";
+				this.x=x;
+				this.y=y;
+			},
+			hide:function(){
+				this.display="none";
+			},
+			selectMenu:function(indexp,index){
+				this.hide();
+				var item={};
+				if(index>-1){
+					item=this.list[indexp].list[index];
+				}else{
+					item=this.list[indexp];
+				}
+				if(item.id=="open"){
+					for(var i=0;i<fileList.fileList.length;i++){
+						if(fileList.fileList[i].seleted){
+							if(fileList.fileList[i].back){
+								var path=fileList.path;
+								path=path.substring(0, path.lastIndexOf('/'));
+								path=path.substring(0, path.lastIndexOf('/'))+"/";
+								fileList.load({name:path});
+							}else{
+								fileList.load({name:fileList.path+fileList.fileList[i].name+"/"});
+							}
+							
+							break;
+						}
+					}
+					
+				}
+				else if(item.id=="delete"){
+					for(var i=0;i<fileList.fileList.length;i++){
+						if(fileList.fileList[i].seleted&&!fileList.fileList[i].back){
+							fileList.delet(fileList.path+fileList.fileList[i].name);
+							break;
+						}
+					}
+					
+				}
+				
+			}
+		},
+	});
+
+
+	toast=new Vue({
+		el:'.toast',
+		data:{
+			msg:'test',
+			display:'none',
+			color:'#f00',
+			background:'#000',
+		},
+		methods:{
+			show:function(text,time){
+				if(!time){
+					time=1000;
+				}
+				this.msg=text;
+				this.display='block';
+				var that=this;
+				setTimeout(function(){
+					that.hide();
+				}, time);
+			},
+			hide:function(){
+				this.display='none';
+			}
+		}
 	});
 	</script>
   

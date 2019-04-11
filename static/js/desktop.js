@@ -15,7 +15,7 @@
 			</ul>
 			<div class="pop_menu" v-bind:style="{display:menudisplay,left:menuLeft,top:menuTop}" >
 				<ul>
-					<li>abc
+					<li>
 						<ul>
 							<li @click.prevent="menuselect(1)">11111</li>
 							<li @click.prevent="menuselect(2)">22222</li>
