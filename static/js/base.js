@@ -16,7 +16,7 @@
 			</div>
 			<div class="winxp_dlg_content" @mousedown="bydown" >
 				<!-- <slot></slot> -->
-				<iframe style="width:100%;height:100%;margin: 0px; padding: 0px;border:0px;" v-bind:src="item.url"></iframe>
+				<iframe style="width:100%;height:100%;margin: 0px; padding: 0px;border:0px;" v-bind:src="item.url" ></iframe>
 			</div>
 			<!--
 			<div class="winxp_dlg_footer">
@@ -38,7 +38,7 @@
 			},
 			list:{
 				default:[],
-			}
+			},
 		}
 		,
 		data:function(){
@@ -53,6 +53,7 @@
 			cls:'max',
 			cursor:'default',
 			attrs:[],
+			param:{name:"lis",age:22},
 			}
 		},
 		

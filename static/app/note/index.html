@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="text/javascript" src="../../js/vue.js" ></script>
+    <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+    <div class="menu">
+        <ul>
+            <li class="first">文件
+                <ul>
+                    <li>新建</li>
+                    <li>打开</li>
+                </ul>
+            </li>
+            <li class="first">编辑</li>
+        </ul>
+    </div>
+    <div class="content">
+        <textarea class="edit" v-model="text"></textarea>
+    </div>
+    <script>
+    var param=window.parent;
+    console.log(param);
+    console.log("==================");
+    console.log(param);
+    console.log("==================");
+    var note=null;
+    note=new Vue({
+        el:'.content',
+        data:{
+            text:'hello',
+
+        },
+        methods: {
+            
+        },
+    });
+    </script>
+</body>
