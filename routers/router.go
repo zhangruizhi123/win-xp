@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"MyWeb2/controllers"
+	"win-xp/controllers"
 
 	"github.com/astaxie/beego"
 )

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"MyWeb2/service"
+	"win-xp/service"
 	"fmt"
 
 	"github.com/astaxie/beego"

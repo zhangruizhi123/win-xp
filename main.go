@@ -1,9 +1,9 @@
 package main
 
 import (
-	_ "MyWeb2/routers"
 	"net/http"
 	"strings"
+	_ "win-xp/routers"
 
 	"github.com/astaxie/beego/context"
 

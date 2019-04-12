@@ -1,7 +1,7 @@
 package test
 
 import (
-	_ "MyWeb2/routers"
+	_ "win-xp/routers"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"

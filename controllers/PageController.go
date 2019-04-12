@@ -5,7 +5,7 @@ package controllers
 **
 **/
 import (
-	"MyWeb2/service"
+	"win-xp/service"
 	"strings"
 
 	"github.com/astaxie/beego"

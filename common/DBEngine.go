@@ -5,10 +5,10 @@ import (
 
 	"github.com/astaxie/beego"
 
-	//_ "mysql"
+	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/go-xorm/xorm"
-	_ "github.com/mattn/go-sqlite3"
+	//_ "github.com/mattn/go-sqlite3"
 )
 
 var configFile string = "conf/app.conf"

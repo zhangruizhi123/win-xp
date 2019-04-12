@@ -1,8 +1,8 @@
 package service
 
 import (
-	"MyWeb2/common"
-	"MyWeb2/models"
+	"win-xp/common"
+	"win-xp/models"
 	"fmt"
 )
 

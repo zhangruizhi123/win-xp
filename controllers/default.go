@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"MyWeb2/common"
-	"MyWeb2/models"
+	"win-xp/common"
+	"win-xp/models"
 	"fmt"
 
 	"github.com/astaxie/beego"
