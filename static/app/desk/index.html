@@ -15,21 +15,36 @@
 		}
 		</style>
 	</head>
-	<body>
+	<body style="height:100%;">
 		<Toast class="toast" :text="msg" :display="display" :color="color" :background="background"></Toast>
-		<div class="listFile">
+		<div class="listFile" style="height:100%;min-height:100%" @contextmenu.prevent="popmenu"  @dragover.prevent="dragover" @drop.prevent="drop" >
+			<input type="file" style="display:none" ref="filElem" @change="getFile">
 			<div v-if="success" class="container contain">
-
+				<!--输入框中的内容-->
+				<div class="row">
+							<div class="col-md-12 col-lg-12 col-sm-12">
+								{{path}}
+							</div>
+				</div>
+				<!--显示当行-->
 				<div class="row">
 					<div class="col-md-4 col-lg-4 col-sm-4">文件名称</div>
 					<div class="col-md-4 col-lg-4 col-sm-4  visible-lg-block visible-md-block">修改时间</div>
 					<div class="col-md-4 col-lg-4 col-sm-4  visible-lg-block visible-md-block">大小</div>
 				</div>
 
-				<div v-for="(item,index) in fileList" @dblclick="selectFile(index)" @click="select(index)" @contextmenu.prevent="popmenu"  v-bind:class="{item:true,row:true,item_seleted:item.seleted}"> 
-						<div class="col-md-4 col-lg-4 col-sm-4 text">
+
+				<div v-for="(item,index) in fileList" @dblclick="selectFile(index)" @click="select(index)" @contextmenu.prevent="popmenu"  v-bind:class="{item:true,row:true,item_seleted:item.seleted}" > 
+					<!--显示每个条目-->	
+					<div class="col-md-4 col-lg-4 col-sm-4 text">
 								<img style="width:30px;height:30px;" v-bind:src="item.img">
-								<span >{{item.name}}</span>
+								<template v-if="item.edit">
+										<input style="height:30px" ref="edit" type="text" v-model="item.name" v-bind:old="item.name" autofocus="autofocus" @blur="unedit(index)" >
+								</template>
+								<template v-else>
+										<span >{{item.name}}</span>
+								</template>
+								
 						</div>
 						<div class="col-md-4 col-lg-4 col-sm-4  visible-lg-block visible-md-block">{{item.time}}</div>
 						<div class="col-md-4 col-lg-4 col-sm-4  visible-lg-block visible-md-block" >{{item.size}}</div>
@@ -95,12 +110,19 @@
 					if(data.success==0){
 						that.success=true;
 						for(var i=0;i<data.data.length;i++){
+							//是否选中
 							data.data[i].seleted=false;
 							if(data.data[i].isDir){
 								data.data[i].img="/icon/folder.png"
 							}else{
 								data.data[i].img="/icon/file.png"
 							}
+							//是否可以修改
+							data.data[i].edit=false;
+							//保存原来的名字
+							data.data[i].old=data.data[i].name;
+							//类型
+							data.data[i].type="rename";
 						}
 						that.path=param.name;
 						that.fileList=data.data;
@@ -174,6 +196,95 @@
 					
 				});
 				
+			},
+			//失去焦点事件
+			unedit:function(index){
+				var that=this;
+				this.fileList[index].edit=false;
+				var rename=this.path+this.fileList[index].name;
+				var url=null;
+				var param={};
+				if(this.fileList[index].type=='rename'){
+					var old=this.path+this.fileList[index].old;
+					console.log("old:"+old)
+					console.log("rename:"+rename)
+					if(rename!=old){
+						url='/file/rename.do';
+						param={name:rename,old:old};
+					}
+				}else if(this.fileList[index].type=='newDir'){
+					console.log("提交新建目录");
+					url='/file/create.do';
+					param={name:rename,type:'dir'};
+				}else if(this.fileList[index].type=='newFile'){
+					url='/file/create.do';
+					param={name:rename,type:'file'};
+					console.log("提交新建wenj");
+				}
+
+				//提交表单
+				if(url){
+					axios({
+							method:'post',
+							url:url,
+							timeout: 1000,
+							params:param,
+					}).then(function(res){
+						that.load({name:that.path});
+						toast.show(res.data.message);
+					});
+				}
+				
+			},
+			//文件拖拽上传
+			dragover:function(e){
+				e.preventDefault();
+				//阻止默认事件
+			},
+			drop:function(e){
+				var that=this;
+				var f=e.dataTransfer.files[0];//获取到第一个上传的文件对象
+				var fr=new FileReader();//实例FileReader对象
+				fr.readAsDataURL(f);//把上传的文件对象转换成url
+				fr.onload=function (e){
+					var image = new FormData();
+					image.append("path",that.path);
+					image.append("file",f);
+					var header={
+						headers: {'Content-Type': 'multipart/form-data'}
+					};
+					toast.show("图片上传中请稍等....",0);
+					axios.post('/file/upload.do',image,header).then(function(res){
+						toast.text(res.data.message,1000);
+						if(res.data.success==0){
+							that.load({name:that.path});
+						}
+					});
+				}
+
+			},
+			getFile:function(){
+				var that = this;
+				var f = this.$refs.filElem.files[0];
+				var name=f.name;
+
+				var fr=new FileReader();//实例FileReader对象
+				fr.readAsDataURL(f);//把上传的文件对象转换成url
+				fr.onload=function (e){
+					var image = new FormData();
+					image.append("path",that.path);
+					image.append("file",f);
+					var header={
+						headers: {'Content-Type': 'multipart/form-data'}
+					};
+					toast.show("图片上传中请稍等....",0);
+					axios.post('/file/upload.do',image,header).then(function(res){
+						toast.text(res.data.message,1000);
+						if(res.data.success==0){
+							that.load({name:that.path});
+						}
+					});
+				}
 			}
 		},
 	});
@@ -182,11 +293,15 @@
 		el:'.pop_menu',
 		created:function(){
 			this.list=[
-				{name:'打开',id:"open"},
+				{name:'打开',id:'open'},
 				{name:'新建',list:[
-					{name:'新建文件'},
-					{name:'新建目录'},
+					{name:'新建文件',id:'newFile'},
+					{name:'新建目录',id:'newDir'},
 				]},
+				{name:'重命名',id:'rename'},
+				{name:'刷新',id:'refresh'},
+				{name:'上传',id:'upload'},
+				{name:'下载',id:'download'},
 				{name:'复制'},
 				{name:'粘贴'},
 				{name:'删除',id:'delete'},
@@ -240,6 +355,42 @@
 						}
 					}
 					
+				}else if(item.id=="rename"){
+					for(var i=0;i<fileList.fileList.length;i++){
+						if(fileList.fileList[i].seleted&&!fileList.fileList[i].back){
+							fileList.fileList[i].edit=true;
+							break;
+						}
+					}
+				}else if(item.id=="newDir"){
+					console.log("创建目录");
+					var item={};
+					item.select=false;
+					item.img="/icon/folder.png"
+					item.edit=true;
+					item.old="新建目录";
+					item.type="newDir"
+					item.isDir=true;
+					item.size=0;
+					item.name="新建文件";
+					fileList.fileList.push(item);
+				}else if(item.id=="newFile"){
+					console.log("创建文件");
+					var item={};
+					item.select=false;
+					item.img="/icon/file.png"
+					item.edit=true;
+					item.old="新建文件.txt";
+					item.type="newFile"
+					item.isDir=false;
+					item.size=0;
+					item.name="新建文件.txt";
+					fileList.fileList.push(item);
+				}else if(item.id=='refresh'){
+					console.log("刷新");
+					fileList.load({name:fileList.path});
+				}else if(item.id=='upload'){
+					fileList.$refs.filElem.dispatchEvent(new MouseEvent('click')) 
 				}
 				
 			}
@@ -256,11 +407,23 @@
 		},
 		methods:{
 			show:function(text,time){
-				if(!time){
+				if(time==undefined){
 					time=1000;
 				}
 				this.msg=text;
 				this.display='block';
+				var that=this;
+				if(time>0){
+					setTimeout(function(){
+						that.hide();
+					}, time);
+				}
+			},
+			text:function(text,time){
+				if(time==undefined){
+					time=1000;
+				}
+				this.msg=text;
 				var that=this;
 				setTimeout(function(){
 					that.hide();
