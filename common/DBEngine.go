@@ -5,9 +5,10 @@ import (
 
 	"github.com/astaxie/beego"
 
-	_ "mysql"
+	//_ "mysql"
 
 	"github.com/go-xorm/xorm"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var configFile string = "conf/app.conf"
@@ -15,7 +16,7 @@ var Engine *xorm.Engine
 
 func init() {
 	var err error
-	Engine, err = xorm.NewEngine("mysql", getMysqlUrl())
+	Engine, err = xorm.NewEngine(getType(), getMysqlUrl())
 	if showsql() == "true" {
 		Engine.ShowSQL(true)
 	}
@@ -30,6 +31,12 @@ func init() {
 func getMysqlUrl() string {
 
 	url := beego.AppConfig.String("url")
+	return url
+}
+
+func getType() string {
+
+	url := beego.AppConfig.String("type")
 	return url
 }
 
