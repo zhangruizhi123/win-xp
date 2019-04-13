@@ -27,11 +27,12 @@ var app=[
 	{
 		name:'扫雷',
 		icon:'app/sweep/img/boomicon.png',
-		url:'app/sweep/'
+		url:'app/sweep/',
 	},
 	{
 		name:'记事本',
 		icon:'app/note/img/note.png',
-		url:'app/note/index.html'
+		url:'app/note/index.html',
+		type:'note'
 	},
 ];

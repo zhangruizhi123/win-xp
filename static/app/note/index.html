@@ -4,6 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script type="text/javascript" src="../../js/vue.js" ></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="css/app.css" />
 </head>
 <body>
@@ -22,21 +23,53 @@
         <textarea class="edit" v-model="text"></textarea>
     </div>
     <script>
-    var param=window.parent;
-    console.log(param);
+    var id=getQueryString("id");
     console.log("==================");
-    console.log(param);
-    console.log("==================");
+    console.log("id:"+id);
+    var itemStr=localStorage.getItem(id);
+    var item=null;
+    if(itemStr){
+        item=JSON.parse(itemStr);
+    }
+    console.log(item);
     var note=null;
     note=new Vue({
         el:'.content',
         data:{
             text:'hello',
-
+        },
+        created:function() {
+            var that=this;
+            if(item!=null){
+                var header={
+                };
+                console.log("name:"+item.param.path);
+                var param={name:item.param.path};
+                axios({
+							method:'post',
+							url:'/file/read.do',
+							timeout: 1000,
+							params:param,
+					}).then(function(res){
+                        console.log(res);
+						if(res.data.success==0){
+                            that.text=res.data.data;
+                            console.log("结构:"+that.text);
+                        }
+					});
+               
+            }
         },
         methods: {
             
         },
     });
+
+    function getQueryString(name) { 
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i"); 
+        var r = window.location.search.substr(1).match(reg); 
+        if (r != null) return unescape(r[2]); 
+        return null; 
+    }
     </script>
 </body>

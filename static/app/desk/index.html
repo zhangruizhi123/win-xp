@@ -157,6 +157,7 @@
 				}else{
 					console.log("是文件");
 					toast.show("是文件");
+					window.parent.openApp('note',{path:this.path+=item.name});
 				}
 			},
 			//单击选择

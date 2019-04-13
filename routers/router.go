@@ -19,4 +19,5 @@ func init() {
 	beego.Router("/file/rename.do", &controllers.FileController{}, "*:Rename")
 	beego.Router("/file/create.do", &controllers.FileController{}, "*:Create")
 	beego.Router("/file/upload.do", &controllers.FileController{}, "*:Upload")
+	beego.Router("/file/read.do", &controllers.FileController{}, "*:Read")
 }

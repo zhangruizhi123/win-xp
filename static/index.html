@@ -45,8 +45,9 @@
 		//底部导航对象
 		var footer=null;
 		var openList=[];
+		var iconList=null;
 		//桌面图标
-		new Vue({
+		iconList=new Vue({
 			el:'.app',
 			data:{
 				list:app,
@@ -114,7 +115,9 @@
 				},
 				/**添加事件**/
 				additems:function(obj){
+					obj.url=obj.url+"?id="+obj.id;
 					this.list.push(obj);
+					localStorage.setItem(obj.id,JSON.stringify(obj));
 					this.$refs.mychild.additem(obj);
 				},
 				//设置窗口的状态
@@ -123,6 +126,30 @@
 				},
 			}
 		});
+
+		/**
+		 * 打开应用，共外部接口调用
+		*/
+		function openApp(type,param){
+			console.log("=======open app======");
+			var obj={};
+			obj.id=uuid();
+			
+			for(var i=0;i<iconList.list.length;i++){
+				console.log(iconList.list);
+				console.log(i+":"+iconList.list[i].type);
+				if(iconList.list[i].type==type){
+					obj.name=iconList.list[i].name;
+					obj.icon=iconList.list[i].icon;
+					obj.url=iconList.list[i].url;
+					obj.param=param;
+					dlg.additems(obj);
+					footer.additem(obj);
+					break;
+				}
+			}
+			
+		}
 		
 		function uuid(){
 			var date=new Date();

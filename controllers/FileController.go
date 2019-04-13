@@ -39,7 +39,18 @@ func (this *FileController) List() {
 }
 
 func (this *FileController) Read() {
-
+	path := this.GetString("name")
+	fmt.Println("pp:",path);
+	dir := beego.AppConfig.String("path")
+	realDir := dir + path
+	byt,err:=ioutil.ReadFile(realDir);
+	fmt.Println("path:",realDir);
+	if err ==nil {
+		this.Data["json"] = map[string]interface{}{"success": 0, "message": "查询成功", "data": string(byt)}
+	}else{
+		this.Data["json"] = map[string]interface{}{"success": 100, "message": err.Error()}
+	}
+	this.ServeJSON()
 }
 
 /****
