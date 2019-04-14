@@ -155,9 +155,9 @@
 					this.path+=item.name+"/";
 					this.load({name:this.path});
 				}else{
-					console.log("是文件");
-					toast.show("是文件");
-					window.parent.openApp('note',{path:this.path+=item.name});
+					//console.log("是文件");
+					//toast.show("是文件");
+					window.parent.openApp('note',{path:this.path+item.name});
 				}
 			},
 			//单击选择
