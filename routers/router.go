@@ -20,4 +20,6 @@ func init() {
 	beego.Router("/file/create.do", &controllers.FileController{}, "*:Create")
 	beego.Router("/file/upload.do", &controllers.FileController{}, "*:Upload")
 	beego.Router("/file/read.do", &controllers.FileController{}, "*:Read")
+	beego.Router("/file/download.do", &controllers.FileController{}, "*:Download")
+	beego.Router("/file/showImg.do", &controllers.FileController{}, "*:ShowImage")
 }

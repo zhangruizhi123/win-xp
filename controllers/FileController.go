@@ -40,14 +40,14 @@ func (this *FileController) List() {
 
 func (this *FileController) Read() {
 	path := this.GetString("name")
-	fmt.Println("pp:",path);
+	fmt.Println("pp:", path)
 	dir := beego.AppConfig.String("path")
 	realDir := dir + path
-	byt,err:=ioutil.ReadFile(realDir);
-	fmt.Println("path:",realDir);
-	if err ==nil {
+	byt, err := ioutil.ReadFile(realDir)
+	fmt.Println("path:", realDir)
+	if err == nil {
 		this.Data["json"] = map[string]interface{}{"success": 0, "message": "查询成功", "data": string(byt)}
-	}else{
+	} else {
 		this.Data["json"] = map[string]interface{}{"success": 100, "message": err.Error()}
 	}
 	this.ServeJSON()
@@ -135,4 +135,25 @@ func (this *FileController) Upload() {
 	}
 
 	this.ServeJSON()
+}
+func (this *FileController) Download() {
+	path := this.GetString("path")
+	name := this.GetString("name")
+	dir := beego.AppConfig.String("path")
+	this.Ctx.Output.Download(dir+path, name)
+}
+
+func (this *FileController) ShowImage() {
+	path := this.GetString("path")
+	//name := this.GetString("name")
+	dir := beego.AppConfig.String("path")
+	byt, err := ioutil.ReadFile(dir + path)
+	if err == nil {
+		this.Ctx.ResponseWriter.Write(byt)
+		this.Ctx.Output.ContentType("image/png")
+	} else {
+		this.Data["json"] = map[string]interface{}{"success": 102, "message": "获取文件失败"}
+		this.ServeJSON()
+	}
+
 }

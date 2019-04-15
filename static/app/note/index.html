@@ -8,20 +8,25 @@
     <link rel="stylesheet" href="css/app.css" />
 </head>
 <body>
-    <div class="menu">
-        <ul>
-            <li class="first">文件
+    <div class="can">
+            <div class="menu">
                 <ul>
-                    <li>新建</li>
-                    <li>打开</li>
+                    <li class="first" v-for="(menuItem,index) in menu" >
+                        <div>{{menuItem.name}}</div>
+                        <template v-if="menuItem.sub">
+                                <ul>
+                                     <li class="second" v-for="(menusub,index) in menuItem.sub" @click="selectMenu(menusub.id)">{{menusub.name}}</li>
+                                </ul>
+                        </template>
+     
+                    </li>
                 </ul>
-            </li>
-            <li class="first">编辑</li>
-        </ul>
+            </div>
+            <div class="content">
+                <textarea class="edit" v-model="text" @keydown.ctrl.83.prevent="selectMenu('save')" @keydown="down"></textarea>
+            </div>
     </div>
-    <div class="content">
-        <textarea class="edit" v-model="text"></textarea>
-    </div>
+   
     <script>
     var id=getQueryString("id");
     console.log("==================");
@@ -31,16 +36,27 @@
     if(itemStr){
         item=JSON.parse(itemStr);
     }
+    console.log("---------------item");
     console.log(item);
+    console.log("---------------item");
     var note=null;
     note=new Vue({
-        el:'.content',
+        el:'.can',
         data:{
-            text:'hello',
+            text:'',
+            menu:[
+                {name:'文件',sub:[
+                        {name:'新建',id:'new'},
+                        {name:'打开',id:'open'},
+                        {name:'保存',id:'save'}
+                    ]
+                },
+                {name:'编辑'}
+            ]
         },
         created:function() {
             var that=this;
-            if(item!=null){
+            if(item!=null&&item.param!=null&&item.param.path!=null){
                 var header={
                 };
                 console.log("name:"+item.param.path);
@@ -54,14 +70,21 @@
                         console.log(res);
 						if(res.data.success==0){
                             that.text=res.data.data;
-                            console.log("结构:"+that.text);
                         }
 					});
                
             }
         },
         methods: {
-            
+            selectMenu:function(id){
+                //点击保存时
+                if(id=='save'){
+                    console.log("保存"+this.text);
+                }
+            },
+            down:function(e){
+                console.log("code:"+e.keyCode);
+            }
         },
     });
 

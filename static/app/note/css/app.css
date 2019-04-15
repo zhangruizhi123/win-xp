@@ -9,7 +9,7 @@
     top:30px;
     bottom:2px;
     right: 2px;
-    border:1px solid #f00;
+    overflow: hidden;
 }
 .content .edit{
     width:100%;
@@ -20,6 +20,9 @@
 .menu{
     position: fixed;
     left: 5px;
+    right: 5px;
+    height: 22px;
+    background-color: #CCC;
     z-index: 99999;
 }
 .menu ul{
@@ -31,6 +34,7 @@
     width:100px;
     text-align: center;
     background-color: #CCC;
+    cursor: pointer;
 }
 .menu ul .first:hover{
     background-color: #DDD;
@@ -42,4 +46,12 @@
 
 .menu ul .first:hover ul{
     display: block;
+}
+
+.menu ul .second{
+    cursor: pointer;
+}
+
+.menu ul .second:hover{
+    background-color: #CCC;
 }
