@@ -5,6 +5,9 @@ import (
 	"io/ioutil"
 	"os"
 
+	"path"
+	"win-xp/service"
+
 	"github.com/astaxie/beego"
 )
 
@@ -13,12 +16,24 @@ type FileController struct {
 }
 
 func (this *FileController) List() {
-	path := this.GetString("name")
-	fmt.Println("hello word", path)
+	path2 := this.GetString("name")
+	fmt.Println("hello word", path2)
 	//dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 	dir := beego.AppConfig.String("path")
-	realDir := dir + path
+	realDir := dir + path2
 	filelist, err := ioutil.ReadDir(realDir)
+	//查出所有的文件图标
+
+	fileTypeService := service.FileTypeService{}
+	iconList, err := fileTypeService.SelectList()
+
+	iconMap := make(map[string]string)
+	if err == nil {
+		for _, iconF := range iconList {
+			iconMap["."+iconF.Name] = iconF.Icon
+		}
+	}
+
 	list := make([]map[string]interface{}, 0)
 	if err == nil {
 		for _, f := range filelist {
@@ -26,6 +41,16 @@ func (this *FileController) List() {
 			name := f.Name()
 			item["name"] = name
 			item["isDir"] = f.IsDir()
+			if f.IsDir() {
+				item["img"] = iconMap[".fold"]
+			} else {
+				end := path.Ext(name)
+				if end == "" {
+					item["img"] = iconMap[".default"]
+				} else {
+					item["img"] = iconMap[end]
+				}
+			}
 			item["size"] = f.Size()
 			item["time"] = f.ModTime().Format("2006-01-02 15:04:05")
 			list = append(list, item)

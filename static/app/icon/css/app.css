@@ -14,6 +14,7 @@
 }
 .icon .select .item{
     display: none;
+    z-index: 9999;
     list-style: none;
     position: absolute;
     padding: 3px;
@@ -22,9 +23,11 @@
     background-color: #AAA;
     
 }
+.icon .select .div{
+    border: 1px solid #f00;
+}
 .icon .select .div:hover .item{
     display: block;
-   
 }
 .icon .select .item li{
     border:1px solid #999;
@@ -32,6 +35,7 @@
 .icon .select .item li:hover{
     background-color: #CCC;
 }
+
 .icon .row_item:hover{
     background-color: #CCC;
 }
