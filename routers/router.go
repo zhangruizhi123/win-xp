@@ -22,4 +22,8 @@ func init() {
 	beego.Router("/file/read.do", &controllers.FileController{}, "*:Read")
 	beego.Router("/file/download.do", &controllers.FileController{}, "*:Download")
 	beego.Router("/file/showImg.do", &controllers.FileController{}, "*:ShowImage")
+	//图标操作
+	beego.Router("/icon/iconlist.do", &controllers.IconController{}, "*:ListIcon")
+	beego.Router("/icon/selectlist.do", &controllers.IconController{}, "*:SelectIcon")
+	beego.Router("/icon/iuItem.do", &controllers.IconController{}, "*:IUItem")
 }
